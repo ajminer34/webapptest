@@ -1,9 +1,17 @@
 from fastapi import FastAPI
-from routers.concerts import router as concerts_router
+import models
+from routers import concerts, artists
+
+from database import engine
+
 
 app = FastAPI()
 
-app.include_router(concerts_router)
+
+models.Base.metadata.create_all(bind=engine)
+
+app.include_router(concerts.router)
+app.include_router(artists.router)
 
 @app.get("/health_check")
 async def get_health_check():

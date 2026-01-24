@@ -1,7 +1,18 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 from pydantic import BaseModel
+from database import SessionLocal
+from typing import Annotated
+from sqlalchemy.orm import Session
 
+def get_db():
 
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+db_dependency = Annotated[Session, Depends(get_db)]
 
 class ConcertModel(BaseModel):
     artist_name : str
@@ -39,24 +50,15 @@ concert_list = [
 ]
 
 @router.get("/by-artist/{artist}")
-async def get_concert_by_artist(artist : str, status_code = status.HTTP_200_OK):
+async def get_concert_by_artist(db : db_dependency, artist : str, status_code = status.HTTP_200_OK):
     for concert in concert_list:
         if concert.get("artist").casefold() == artist.casefold():
             return concert
     raise HTTPException(status_code = 404, detail = f"Concert not found with artist: {artist}")
     
 @router.get("/by-venue/{venue}")
-async def get_concert_by_venue(venue : str, status_code = status.HTTP_200_OK):
+async def get_concert_by_venue(db : db_dependency, venue : str, status_code = status.HTTP_200_OK):
     for concert in concert_list:
         if concert.get("venue").casefold() == venue.casefold():
             return concert
     raise HTTPException(status_code=404, detail = f"Concert not found by venue: {venue} ")
-"""@router.post("/artist/")
-async def create_artist(song_model : SongModel, status_code = status.HTTP_201_CREATED):
-    song_list[song_model.artist_name] = song_model.song_name
-
-@router.put("/aritst/")
-async def update_song(song_model : SongModel, status_code = status.HTTP_204_NO_CONTENT):
-    if not song_model.artist_name in song_list.keys():
-        return status.HTTP_404_NOT_FOUND
-    song_list[song_model.artist_name] = song_model.song_name"""
