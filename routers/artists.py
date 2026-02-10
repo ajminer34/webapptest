@@ -28,12 +28,10 @@ router = APIRouter(
 async def get_all_artists(db : db_dependency):
     stmt = select(Artists)
     artists = db.scalars(stmt).all()
-    for a in artists:
-        print(a)
     return artists
 
-@router.post("/new_artist")
-async def create_new_artist(db : db_dependency, artist : ArtistsModel, status_code = status.HTTP_201_CREATED):
+@router.post("/new_artist", status_code = status.HTTP_201_CREATED)
+async def create_new_artist(db : db_dependency, artist : ArtistsModel):
     new_artist = Artists(**artist.model_dump())
     db.add(new_artist)
     db.commit()

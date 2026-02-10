@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
+from models import Concerts
 
 def get_db():
 
@@ -24,6 +25,16 @@ class ConcertModel(BaseModel):
     doors_open : str
     ticket_price : int
 
+"""class ConcertModel(BaseModel):
+    artist_name : str
+    city : str
+    state : str
+    venue_address : str
+    venue : str
+    date : str
+    doors_open : str
+    ticket_price : int
+"""
 
 router = APIRouter(
     prefix = "/concerts",
@@ -62,3 +73,6 @@ async def get_concert_by_venue(db : db_dependency, venue : str, status_code = st
         if concert.get("venue").casefold() == venue.casefold():
             return concert
     raise HTTPException(status_code=404, detail = f"Concert not found by venue: {venue} ")
+
+"""@router.post("/new_concert")
+async def create_concert(db : db_dependency, concert : ConcertModel, status_code = status.HTTP_201_CREATED):"""
