@@ -5,7 +5,11 @@ from fastapi import FastAPI
 #from database import engine
 
 
-app = FastAPI()
+app = FastAPI(
+    docs_url=None, 
+    redoc_url=None, 
+    openapi_url=None
+)
 
 
 #models.Base.metadata.create_all(bind=engine)
